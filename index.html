@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학사일정 캘린더</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #e2e4e9;
+    --text: #1f2430;
+    --text-muted: #8a8f9a;
+    --accent: #4f6df5;
+    --today-ring: #ff5a5f;
+    --sunday: #e0555f;
+    --saturday: #3b6fd6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .calendar-app {
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .month-nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .month-nav button {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+
+  .month-nav button:hover {
+    background: #eef0f4;
+  }
+
+  .month-title {
+    font-size: 22px;
+    font-weight: 700;
+    min-width: 140px;
+    text-align: center;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .header-actions button {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .header-actions button:hover {
+    background: #eef0f4;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+    min-height: 20px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .calendar-grid {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .weekday-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .weekday-cell {
+    text-align: center;
+    padding: 12px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .weekday-cell.sun { color: var(--sunday); }
+  .weekday-cell.sat { color: var(--saturday); }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(100px, auto);
+  }
+
+  .day-cell {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .day-cell:nth-child(7n) {
+    border-right: none;
+  }
+
+  .day-cell.outside {
+    background: #fafbfc;
+  }
+
+  .day-cell.outside .day-number {
+    color: #c9cdd6;
+  }
+
+  .day-number {
+    font-size: 13px;
+    font-weight: 600;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .day-cell.sun .day-number { color: var(--sunday); }
+  .day-cell.sat .day-number { color: var(--saturday); }
+
+  .day-cell.today .day-number {
+    background: var(--today-ring);
+    color: #fff;
+  }
+
+  .events {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+  }
+
+  .event-chip {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  .memo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .memo-overlay.open {
+    display: flex;
+  }
+
+  .memo-note {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    background: #fffbd6;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      #f1e9a8 28px
+    );
+    border-radius: 3px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 26px 22px 22px;
+    transform: rotate(-1deg);
+  }
+
+  .memo-note::before {
+    content: "";
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e0555f;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+  }
+
+  .memo-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border: none;
+    background: none;
+    font-size: 15px;
+    color: #93926a;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .memo-institute {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #756f2c;
+    margin-bottom: 10px;
+  }
+
+  .memo-institute-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .memo-batch {
+    font-size: 13px;
+    font-weight: 700;
+    color: #55521f;
+    margin-bottom: 2px;
+  }
+
+  .memo-category {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c2a10;
+    margin-bottom: 18px;
+  }
+
+  .memo-period-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9a935a;
+    margin-bottom: 4px;
+  }
+
+  .memo-period-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #33301a;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .days-grid { grid-auto-rows: minmax(70px, auto); }
+    .day-number { font-size: 11px; width: 20px; height: 20px; }
+    .month-title { font-size: 18px; min-width: auto; }
+    .event-chip { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+  <div class="calendar-app">
+    <div class="calendar-header">
+      <div class="month-nav">
+        <button id="prevMonth" aria-label="이전 달">‹</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button id="nextMonth" aria-label="다음 달">›</button>
+      </div>
+      <div class="header-actions">
+        <button id="todayBtn">오늘</button>
+      </div>
+    </div>
+
+    <div class="legend" id="legend">
+      <!-- 교육원별 색상 범례가 여기 표시됩니다 -->
+    </div>
+
+    <div class="calendar-grid">
+      <div class="weekday-row" id="weekdayRow"></div>
+      <div class="days-grid" id="daysGrid"></div>
+    </div>
+  </div>
+
+  <div class="memo-overlay" id="memoOverlay">
+    <div class="memo-note">
+      <button class="memo-close" id="memoClose" aria-label="닫기">✕</button>
+      <div class="memo-institute">
+        <span class="memo-institute-dot" id="memoDot"></span>
+        <span id="memoInstitute"></span>
+      </div>
+      <div class="memo-batch" id="memoBatch"></div>
+      <div class="memo-category" id="memoCategory"></div>
+      <div class="memo-period-label">실제 진행 기간</div>
+      <div class="memo-period-value" id="memoPeriod"></div>
+    </div>
+  </div>
+
+<script>
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+
+  // 교육원 정의: 교육원별 색상을 여기서 관리합니다
+  const institutes = {
+    koreahrd: { name: "한국HRD원격평생교육원", color: "#29b6f6" } // 밝은 파랑
+  };
+
+  // 교육원별 학사일정 원본 데이터 (기수 단위)
+  // 새 교육원/기수를 추가할 때는 이 배열에 항목을 추가하면 아래 로직이 자동으로 캘린더 이벤트를 생성합니다.
+  const academicBatches = [
+    {
+      institute: "koreahrd",
+      label: "1학기 9기",
+      ranges: [
+        { title: "개강", start: "2026-04-28", end: "2026-04-28" },
+        { title: "수시시험", start: "2026-05-26", end: "2026-06-08" },
+        { title: "과제제출", start: "2026-06-02", end: "2026-07-13" },
+        { title: "토론제출", start: "2026-06-02", end: "2026-07-20" },
+        { title: "중간고사", start: "2026-06-19", end: "2026-06-22" },
+        { title: "기말고사(종강)", start: "2026-08-07", end: "2026-08-10" },
+        { title: "성적확인", start: "2026-08-20", end: "2026-08-21" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "1학기 10기",
+      ranges: [
+        { title: "개강", start: "2026-05-19", end: "2026-05-19" },
+        { title: "수시시험", start: "2026-06-16", end: "2026-06-29" },
+        { title: "과제제출", start: "2026-06-23", end: "2026-08-03" },
+        { title: "토론제출", start: "2026-06-23", end: "2026-08-10" },
+        { title: "중간고사", start: "2026-07-10", end: "2026-07-13" },
+        { title: "기말고사(종강)", start: "2026-08-28", end: "2026-08-31" },
+        { title: "성적확인", start: "2026-09-10", end: "2026-09-11" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 1기",
+      ranges: [
+        { title: "개강", start: "2026-05-26", end: "2026-05-26" },
+        { title: "수시시험", start: "2026-06-23", end: "2026-07-06" },
+        { title: "과제제출", start: "2026-06-30", end: "2026-08-10" },
+        { title: "토론제출", start: "2026-06-30", end: "2026-08-17" },
+        { title: "중간고사", start: "2026-07-17", end: "2026-07-20" },
+        { title: "기말고사(종강)", start: "2026-09-04", end: "2026-09-07" },
+        { title: "성적확인", start: "2026-09-17", end: "2026-09-18" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 2기",
+      ranges: [
+        { title: "개강", start: "2026-06-23", end: "2026-06-23" },
+        { title: "수시시험", start: "2026-07-21", end: "2026-08-03" },
+        { title: "과제제출", start: "2026-07-28", end: "2026-09-07" },
+        { title: "토론제출", start: "2026-07-28", end: "2026-09-14" },
+        { title: "중간고사", start: "2026-08-14", end: "2026-08-17" },
+        { title: "기말고사(종강)", start: "2026-10-02", end: "2026-10-05" },
+        { title: "성적확인", start: "2026-10-15", end: "2026-10-16" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 11기",
+      ranges: [
+        { title: "개강", start: "2026-07-07", end: "2026-07-07" },
+        { title: "수시시험", start: "2026-08-04", end: "2026-08-17" },
+        { title: "과제제출", start: "2026-08-11", end: "2026-09-21" },
+        { title: "토론제출", start: "2026-08-11", end: "2026-09-28" },
+        { title: "중간고사", start: "2026-08-28", end: "2026-08-31" },
+        { title: "기말고사(종강)", start: "2026-10-16", end: "2026-10-19" },
+        { title: "성적확인", start: "2026-10-29", end: "2026-10-30" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 3기",
+      ranges: [
+        { title: "개강", start: "2026-07-14", end: "2026-07-14" },
+        { title: "수시시험", start: "2026-08-11", end: "2026-08-24" },
+        { title: "과제제출", start: "2026-08-18", end: "2026-09-28" },
+        { title: "토론제출", start: "2026-08-18", end: "2026-10-05" },
+        { title: "중간고사", start: "2026-09-04", end: "2026-09-07" },
+        { title: "기말고사(종강)", start: "2026-10-23", end: "2026-10-26" },
+        { title: "성적확인", start: "2026-11-05", end: "2026-11-06" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 4기",
+      ranges: [
+        { title: "개강", start: "2026-08-11", end: "2026-08-11" },
+        { title: "수시시험", start: "2026-09-08", end: "2026-09-21" },
+        { title: "과제제출", start: "2026-09-15", end: "2026-10-26" },
+        { title: "토론제출", start: "2026-09-15", end: "2026-11-02" },
+        { title: "중간고사", start: "2026-10-02", end: "2026-10-05" },
+        { title: "기말고사(종강)", start: "2026-11-20", end: "2026-11-23" },
+        { title: "성적확인", start: "2026-12-03", end: "2026-12-04" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 5기",
+      ranges: [
+        { title: "개강", start: "2026-09-01", end: "2026-09-01" },
+        { title: "수시시험", start: "2026-09-29", end: "2026-10-12" },
+        { title: "과제제출", start: "2026-10-06", end: "2026-11-16" },
+        { title: "토론제출", start: "2026-10-06", end: "2026-11-23" },
+        { title: "중간고사", start: "2026-10-23", end: "2026-10-26" },
+        { title: "기말고사(종강)", start: "2026-12-11", end: "2026-12-14" },
+        { title: "성적확인", start: "2026-12-24", end: "2026-12-25" }
+      ]
+    },
+    {
+      institute: "koreahrd",
+      label: "2학기 6기",
+      ranges: [
+        { title: "개강", start: "2026-09-15", end: "2026-09-15" },
+        { title: "수시시험", start: "2026-10-13", end: "2026-10-26" },
+        { title: "과제제출", start: "2026-10-20", end: "2026-11-30" },
+        { title: "토론제출", start: "2026-10-20", end: "2026-12-07" },
+        { title: "중간고사", start: "2026-11-06", end: "2026-11-09" },
+        { title: "기말고사(종강)", start: "2026-12-25", end: "2026-12-28" },
+        { title: "성적확인", start: "2027-01-07", end: "2027-01-08" }
+      ]
+    }
+  ];
+
+  // academicBatches를 캘린더가 사용하는 events 배열로 변환
+  // 하루짜리 항목(개강 등)은 그날 하루만, 기간이 있는 항목은 시작일/종료일 이틀에만 표시합니다.
+  const events = academicBatches.flatMap(batch => {
+    const inst = institutes[batch.institute];
+    const label = `[${batch.label}]`;
+    return batch.ranges.flatMap(r => {
+      const plain = `${label} ${r.title}`;
+      const shared = {
+        batchLabel: batch.label,
+        category: r.title,
+        start: r.start,
+        end: r.end,
+        institute: inst.name,
+        color: inst.color
+      };
+      if (r.start === r.end) {
+        return [{
+          ...shared,
+          date: r.start,
+          html: `<strong>${label}</strong> ${r.title}`,
+          plain
+        }];
+      }
+      return [
+        {
+          ...shared,
+          date: r.start,
+          html: `<strong>${label}</strong> ${r.title} → 시작`,
+          plain: `${plain} → 시작`
+        },
+        {
+          ...shared,
+          date: r.end,
+          html: `종료 ← <strong>${label}</strong> ${r.title}`,
+          plain: `종료 ← ${plain}`
+        }
+      ];
+    });
+  });
+
+  const state = {
+    current: new Date()
+  };
+  state.current.setDate(1);
+
+  const monthTitleEl = document.getElementById("monthTitle");
+  const weekdayRowEl = document.getElementById("weekdayRow");
+  const daysGridEl = document.getElementById("daysGrid");
+  const legendEl = document.getElementById("legend");
+
+  function renderWeekdayRow() {
+    weekdayRowEl.innerHTML = "";
+    weekdays.forEach((label, idx) => {
+      const cell = document.createElement("div");
+      cell.className = "weekday-cell" + (idx === 0 ? " sun" : idx === 6 ? " sat" : "");
+      cell.textContent = label;
+      weekdayRowEl.appendChild(cell);
+    });
+  }
+
+  function formatDateKey(y, m, d) {
+    const mm = String(m + 1).padStart(2, "0");
+    const dd = String(d).padStart(2, "0");
+    return `${y}-${mm}-${dd}`;
+  }
+
+  const memoOverlay = document.getElementById("memoOverlay");
+  const memoDot = document.getElementById("memoDot");
+  const memoInstitute = document.getElementById("memoInstitute");
+  const memoBatch = document.getElementById("memoBatch");
+  const memoCategory = document.getElementById("memoCategory");
+  const memoPeriod = document.getElementById("memoPeriod");
+
+  function formatDisplayDate(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    const date = new Date(y, m - 1, d);
+    return `${y}년 ${m}월 ${d}일(${weekdays[date.getDay()]})`;
+  }
+
+  function openMemo(ev) {
+    memoDot.style.background = ev.color;
+    memoInstitute.textContent = ev.institute;
+    memoBatch.textContent = ev.batchLabel;
+    memoCategory.textContent = ev.category;
+    memoPeriod.textContent = ev.start === ev.end
+      ? formatDisplayDate(ev.start)
+      : `${formatDisplayDate(ev.start)} ~ ${formatDisplayDate(ev.end)}`;
+    memoOverlay.classList.add("open");
+  }
+
+  function closeMemo() {
+    memoOverlay.classList.remove("open");
+  }
+
+  document.getElementById("memoClose").addEventListener("click", closeMemo);
+  memoOverlay.addEventListener("click", (e) => {
+    if (e.target === memoOverlay) closeMemo();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMemo();
+  });
+
+  function renderLegend() {
+    legendEl.innerHTML = "";
+    const seen = new Map();
+    events.forEach(ev => {
+      if (!seen.has(ev.institute)) seen.set(ev.institute, ev.color);
+    });
+    seen.forEach((color, institute) => {
+      const item = document.createElement("div");
+      item.className = "legend-item";
+      item.innerHTML = `<span class="legend-dot" style="background:${color}"></span>${institute}`;
+      legendEl.appendChild(item);
+    });
+  }
+
+  function renderCalendar() {
+    const year = state.current.getFullYear();
+    const month = state.current.getMonth();
+
+    monthTitleEl.textContent = `${year}년 ${month + 1}월`;
+
+    const firstDay = new Date(year, month, 1);
+    const startWeekday = firstDay.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+    const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    daysGridEl.innerHTML = "";
+
+    for (let i = 0; i < totalCells; i++) {
+      const cell = document.createElement("div");
+      const col = i % 7;
+      let dayNum, cellYear = year, cellMonth = month, outside = false;
+
+      if (i < startWeekday) {
+        dayNum = daysInPrevMonth - startWeekday + i + 1;
+        cellMonth = month - 1;
+        outside = true;
+      } else if (i >= startWeekday + daysInMonth) {
+        dayNum = i - startWeekday - daysInMonth + 1;
+        cellMonth = month + 1;
+        outside = true;
+      } else {
+        dayNum = i - startWeekday + 1;
+      }
+
+      if (cellMonth < 0) { cellMonth = 11; cellYear -= 1; }
+      if (cellMonth > 11) { cellMonth = 0; cellYear += 1; }
+
+      cell.className = "day-cell" + (outside ? " outside" : "") + (col === 0 ? " sun" : col === 6 ? " sat" : "");
+
+      if (!outside && isCurrentMonth && dayNum === today.getDate()) {
+        cell.classList.add("today");
+      }
+
+      const numberEl = document.createElement("div");
+      numberEl.className = "day-number";
+      numberEl.textContent = dayNum;
+      cell.appendChild(numberEl);
+
+      const eventsWrap = document.createElement("div");
+      eventsWrap.className = "events";
+      const dateKey = formatDateKey(cellYear, cellMonth, dayNum);
+      events
+        .filter(ev => ev.date === dateKey)
+        .forEach(ev => {
+          const chip = document.createElement("div");
+          chip.className = "event-chip";
+          chip.style.background = ev.color;
+          chip.innerHTML = ev.html;
+          chip.title = `${ev.institute} · ${ev.plain}`;
+          chip.addEventListener("click", () => openMemo(ev));
+          eventsWrap.appendChild(chip);
+        });
+      cell.appendChild(eventsWrap);
+
+      daysGridEl.appendChild(cell);
+    }
+  }
+
+  function render() {
+    renderWeekdayRow();
+    renderLegend();
+    renderCalendar();
+  }
+
+  document.getElementById("prevMonth").addEventListener("click", () => {
+    state.current.setMonth(state.current.getMonth() - 1);
+    render();
+  });
+
+  document.getElementById("nextMonth").addEventListener("click", () => {
+    state.current.setMonth(state.current.getMonth() + 1);
+    render();
+  });
+
+  document.getElementById("todayBtn").addEventListener("click", () => {
+    state.current = new Date();
+    state.current.setDate(1);
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
