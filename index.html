@@ -29,9 +29,177 @@
     padding: 32px 16px;
   }
 
+  .page-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+    max-width: 1300px;
+  }
+
   .calendar-app {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1300px;
+    position: relative;
+  }
+
+  .quick-menu-wrap {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 60;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .quick-menu-toggle {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 0 12px 12px 0;
+    padding: 16px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.3;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .quick-menu-arrow {
+    font-size: 15px;
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+
+  .quick-menu-wrap.open .quick-menu-arrow {
+    transform: rotate(180deg);
+  }
+
+  .quick-menu-panel {
+    width: 0;
+    overflow: hidden;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: none;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.08);
+    transition: width 0.25s ease;
+  }
+
+  .quick-menu-wrap.open .quick-menu-panel {
+    width: 190px;
+  }
+
+  .quick-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 190px;
+  }
+
+  .quick-menu-list a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f5f6f8;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: center;
+    transition: background 0.15s ease;
+  }
+
+  .quick-menu-list a:hover {
+    background: #eef0f4;
+  }
+
+  .notice-board {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .notice-logo-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .notice-logo-row img {
+    height: 44px;
+    width: auto;
+  }
+
+  .notice-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .notice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .notice-item:last-child {
+    border-bottom: none;
+  }
+
+  .notice-item .notice-title {
+    font-size: 13px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  .notice-item .notice-title:hover {
+    text-decoration: underline;
+  }
+
+  .notice-item .notice-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex: none;
+  }
+
+  .notice-more {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .notice-more:hover {
+    color: var(--accent);
   }
 
   .calendar-header {
@@ -75,6 +243,12 @@
     text-align: center;
   }
 
+  .month-logo {
+    height: 26px;
+    width: auto;
+    margin-left: 6px;
+  }
+
   .header-actions {
     display: flex;
     gap: 8px;
@@ -97,7 +271,7 @@
   .legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 14px;
     min-height: 20px;
   }
@@ -108,6 +282,37 @@
     gap: 6px;
     font-size: 12px;
     color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    background: transparent;
+    transition: background 0.15s ease, opacity 0.15s ease;
+    user-select: none;
+  }
+
+  .legend-item:hover {
+    background: #eef0f4;
+  }
+
+  .legend-item.active {
+    background: var(--panel);
+    border-color: var(--border);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .legend.filtering .legend-item:not(.active):not(.legend-all) {
+    opacity: 0.45;
+  }
+
+  .legend-all {
+    font-weight: 600;
+  }
+
+  .legend.filtering .legend-all {
+    color: var(--accent);
+    text-decoration: underline;
   }
 
   .legend-dot {
@@ -123,10 +328,10 @@
     overflow: hidden;
   }
 
-  .weekday-row {
+  .calendar-table {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    border-bottom: 1px solid var(--border);
+    grid-auto-rows: auto minmax(128px, auto);
   }
 
   .weekday-cell {
@@ -135,16 +340,12 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
   }
 
   .weekday-cell.sun { color: var(--sunday); }
   .weekday-cell.sat { color: var(--saturday); }
-
-  .days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: minmax(100px, auto);
-  }
 
   .day-cell {
     border-right: 1px solid var(--border);
@@ -154,9 +355,11 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    overflow: hidden;
   }
 
-  .day-cell:nth-child(7n) {
+  .day-cell.col-last {
     border-right: none;
   }
 
@@ -213,7 +416,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 110;
     padding: 20px;
   }
 
@@ -310,20 +513,135 @@
   }
 
   @media (max-width: 700px) {
-    .days-grid { grid-auto-rows: minmax(70px, auto); }
+    .calendar-table { grid-auto-rows: auto minmax(70px, auto); }
     .day-number { font-size: 11px; width: 20px; height: 20px; }
     .month-title { font-size: 18px; min-width: auto; }
     .event-chip { font-size: 9px; }
+    .month-logo { height: 18px; }
+  }
+
+  .today-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .today-overlay.open {
+    display: flex;
+  }
+
+  .today-modal {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 28px 24px 24px;
+  }
+
+  .today-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .today-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-right: 20px;
+  }
+
+  .today-modal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .today-modal-item {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .today-modal-item:hover {
+    background: #f5f6f8;
+  }
+
+  .today-modal-item-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .today-modal-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .today-modal-category {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .today-modal-period {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .today-modal-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 30px 0;
   }
 </style>
 </head>
 <body>
+  <div class="page-layout">
   <div class="calendar-app">
+    <div class="quick-menu-wrap" id="quickMenuWrap">
+      <button class="quick-menu-toggle" id="quickMenuToggle" aria-label="퀵메뉴 열기/닫기">
+        <span class="quick-menu-arrow" id="quickMenuArrow">›</span>
+        <span>퀵메뉴</span>
+      </button>
+      <div class="quick-menu-panel">
+        <ul class="quick-menu-list" id="quickMenuList"></ul>
+      </div>
+    </div>
+
     <div class="calendar-header">
       <div class="month-nav">
         <button id="prevMonth" aria-label="이전 달">‹</button>
         <div class="month-title" id="monthTitle"></div>
         <button id="nextMonth" aria-label="다음 달">›</button>
+        <img class="month-logo" id="monthLogo" alt="한국평생교육관리센터">
       </div>
       <div class="header-actions">
         <button id="todayBtn">오늘</button>
@@ -335,9 +653,15 @@
     </div>
 
     <div class="calendar-grid">
-      <div class="weekday-row" id="weekdayRow"></div>
-      <div class="days-grid" id="daysGrid"></div>
+      <div class="calendar-table" id="calendarTable"></div>
     </div>
+  </div>
+
+  <aside class="notice-board">
+    <div class="notice-logo-row" id="noticeLogoRow"></div>
+    <ul class="notice-list" id="noticeList"></ul>
+    <a class="notice-more" id="noticeMore" href="#" target="_blank" rel="noopener">더보기</a>
+  </aside>
   </div>
 
   <div class="memo-overlay" id="memoOverlay">
@@ -354,12 +678,27 @@
     </div>
   </div>
 
+  <div class="today-overlay" id="todayOverlay">
+    <div class="today-modal">
+      <button class="today-close" id="todayClose" aria-label="닫기">✕</button>
+      <div class="today-modal-title" id="todayModalTitle"></div>
+      <div class="today-modal-list" id="todayModalList"></div>
+    </div>
+  </div>
+
 <script>
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
 
   // 교육원 정의: 교육원별 색상을 여기서 관리합니다
   const institutes = {
-    koreahrd: { name: "한국HRD원격평생교육원", color: "#29b6f6" } // 밝은 파랑
+    koreahrd: { name: "한국HRD", color: "#29b6f6" }, // 밝은 파랑
+    edup: { name: "에듀업", color: "#43a047" }, // 초록색
+    globalinno: { name: "글로벌이노에듀", color: "#ef5350" }, // 옅은 빨강
+    itbank: { name: "아이티뱅크", color: "#1a237e" }, // 남색
+    ocu: { name: "열린사이버", color: "#d4ac0d" }, // 짙은 노랑
+    koredutech: { name: "한국원격", color: "#fb8c00" }, // 주황색
+    soongsil: { name: "숭실원격", color: "#8e24aa" }, // 보라색
+    newm: { name: "뉴엠원격", color: "#757575" } // 회색
   };
 
   // 교육원별 학사일정 원본 데이터 (기수 단위)
@@ -481,6 +820,602 @@
         { title: "기말고사(종강)", start: "2026-12-25", end: "2026-12-28" },
         { title: "성적확인", start: "2027-01-07", end: "2027-01-08" }
       ]
+    },
+    {
+      institute: "edup",
+      label: "4월 29일 개강",
+      ranges: [
+        { title: "개강", start: "2026-04-29", end: "2026-04-29" },
+        { title: "나의학습계획서", start: "2026-04-29", end: "2026-05-19" },
+        { title: "과제", start: "2026-05-27", end: "2026-06-30" },
+        { title: "중간고사", start: "2026-06-19", end: "2026-06-22" },
+        { title: "자기소개서", start: "2026-06-24", end: "2026-07-07" },
+        { title: "쪽지시험", start: "2026-07-10", end: "2026-07-13" },
+        { title: "토론", start: "2026-07-24", end: "2026-07-27" },
+        { title: "기말고사(종강)", start: "2026-08-07", end: "2026-08-11" },
+        { title: "학점인정신청", start: "2026-10-01", end: "2026-10-30" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "5월 13일 개강",
+      ranges: [
+        { title: "개강", start: "2026-05-13", end: "2026-05-13" },
+        { title: "나의학습계획서", start: "2026-05-13", end: "2026-06-02" },
+        { title: "과제", start: "2026-06-10", end: "2026-07-14" },
+        { title: "중간고사", start: "2026-07-03", end: "2026-07-06" },
+        { title: "자기소개서", start: "2026-07-08", end: "2026-07-21" },
+        { title: "쪽지시험", start: "2026-07-24", end: "2026-07-27" },
+        { title: "토론", start: "2026-08-07", end: "2026-08-10" },
+        { title: "기말고사(종강)", start: "2026-08-21", end: "2026-08-25" },
+        { title: "학점인정신청", start: "2026-10-01", end: "2026-10-30" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "5월 20일 개강",
+      ranges: [
+        { title: "개강", start: "2026-05-20", end: "2026-05-20" },
+        { title: "나의학습계획서", start: "2026-05-20", end: "2026-06-09" },
+        { title: "과제", start: "2026-06-17", end: "2026-07-21" },
+        { title: "중간고사", start: "2026-07-10", end: "2026-07-13" },
+        { title: "자기소개서", start: "2026-07-15", end: "2026-07-28" },
+        { title: "쪽지시험", start: "2026-07-31", end: "2026-08-03" },
+        { title: "토론", start: "2026-08-14", end: "2026-08-17" },
+        { title: "기말고사(종강)", start: "2026-08-28", end: "2026-09-01" },
+        { title: "학점인정신청", start: "2026-10-01", end: "2026-10-30" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "6월 24일 개강",
+      ranges: [
+        { title: "개강", start: "2026-06-24", end: "2026-06-24" },
+        { title: "나의학습계획서", start: "2026-06-24", end: "2026-07-14" },
+        { title: "과제", start: "2026-07-22", end: "2026-08-25" },
+        { title: "중간고사", start: "2026-08-14", end: "2026-08-17" },
+        { title: "자기소개서", start: "2026-08-19", end: "2026-09-01" },
+        { title: "쪽지시험", start: "2026-09-04", end: "2026-09-07" },
+        { title: "토론", start: "2026-09-18", end: "2026-09-21" },
+        { title: "기말고사(종강)", start: "2026-10-02", end: "2026-10-06" },
+        { title: "학점인정신청", start: "2026-10-28", end: "2026-10-30" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "7월 21일 개강",
+      ranges: [
+        { title: "개강", start: "2026-07-21", end: "2026-07-21" },
+        { title: "나의학습계획서", start: "2026-07-21", end: "2026-08-10" },
+        { title: "과제", start: "2026-08-18", end: "2026-09-21" },
+        { title: "중간고사", start: "2026-09-10", end: "2026-09-13" },
+        { title: "자기소개서", start: "2026-09-15", end: "2026-09-28" },
+        { title: "쪽지시험", start: "2026-10-01", end: "2026-10-04" },
+        { title: "토론", start: "2026-10-15", end: "2026-10-18" },
+        { title: "기말고사(종강)", start: "2027-03-27", end: "2027-03-31" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "7월 22일 개강",
+      ranges: [
+        { title: "개강", start: "2026-07-22", end: "2026-07-22" },
+        { title: "나의학습계획서", start: "2026-07-22", end: "2026-08-11" },
+        { title: "과제", start: "2026-08-19", end: "2026-09-22" },
+        { title: "중간고사", start: "2026-09-11", end: "2026-09-14" },
+        { title: "자기소개서", start: "2026-09-16", end: "2026-09-29" },
+        { title: "쪽지시험", start: "2026-10-02", end: "2026-10-05" },
+        { title: "토론", start: "2026-10-16", end: "2026-10-19" },
+        { title: "기말고사(종강)", start: "2026-10-30", end: "2026-11-03" },
+        { title: "학점인정신청", start: "2027-01-01", end: "2027-01-29" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "8월 19일 개강",
+      ranges: [
+        { title: "개강", start: "2026-08-19", end: "2026-08-19" },
+        { title: "나의학습계획서", start: "2026-08-19", end: "2026-09-08" },
+        { title: "과제", start: "2026-09-16", end: "2026-10-20" },
+        { title: "중간고사", start: "2026-10-09", end: "2026-10-12" },
+        { title: "자기소개서", start: "2026-10-14", end: "2026-10-27" },
+        { title: "쪽지시험", start: "2026-10-30", end: "2026-11-02" },
+        { title: "토론", start: "2026-11-13", end: "2026-11-16" },
+        { title: "기말고사(종강)", start: "2026-11-27", end: "2026-12-01" },
+        { title: "학점인정신청", start: "2027-01-01", end: "2027-01-29" }
+      ]
+    },
+    {
+      institute: "edup",
+      label: "9월 16일 개강",
+      ranges: [
+        { title: "개강", start: "2026-09-16", end: "2026-09-16" },
+        { title: "나의학습계획서", start: "2026-09-16", end: "2026-10-06" },
+        { title: "과제", start: "2026-10-14", end: "2026-11-17" },
+        { title: "중간고사", start: "2026-11-06", end: "2026-11-09" },
+        { title: "자기소개서", start: "2026-11-11", end: "2026-11-24" },
+        { title: "쪽지시험", start: "2026-11-27", end: "2026-11-30" },
+        { title: "토론", start: "2026-12-11", end: "2026-12-14" },
+        { title: "기말고사(종강)", start: "2026-12-25", end: "2026-12-29" },
+        { title: "학점인정신청", start: "2027-01-13", end: "2027-01-29" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "4월 15일 개강",
+      ranges: [
+        { title: "개강", start: "2026-04-15", end: "2026-04-15" },
+        { title: "탐구활동", start: "2026-05-06", end: "2026-05-19" },
+        { title: "과제", start: "2026-06-10", end: "2026-07-07" },
+        { title: "중간고사", start: "2026-06-05", end: "2026-06-08" },
+        { title: "쪽지시험", start: "2026-07-01", end: "2026-07-07" },
+        { title: "생각나눔", start: "2026-06-10", end: "2026-07-28" },
+        { title: "기말고사(종강)", start: "2026-07-24", end: "2026-07-28" },
+        { title: "성적확인", start: "2026-08-03", end: "2026-08-06" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "5월 13일 개강",
+      ranges: [
+        { title: "개강", start: "2026-05-13", end: "2026-05-13" },
+        { title: "탐구활동", start: "2026-06-03", end: "2026-06-16" },
+        { title: "과제", start: "2026-07-08", end: "2026-08-04" },
+        { title: "중간고사", start: "2026-07-03", end: "2026-07-06" },
+        { title: "쪽지시험", start: "2026-07-29", end: "2026-08-04" },
+        { title: "생각나눔", start: "2026-07-08", end: "2026-08-25" },
+        { title: "기말고사(종강)", start: "2026-08-21", end: "2026-08-25" },
+        { title: "성적확인", start: "2026-08-31", end: "2026-09-03" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "5월 20일 개강",
+      ranges: [
+        { title: "개강", start: "2026-05-20", end: "2026-05-20" },
+        { title: "탐구활동", start: "2026-06-10", end: "2026-06-23" },
+        { title: "과제", start: "2026-07-15", end: "2026-08-11" },
+        { title: "중간고사", start: "2026-07-10", end: "2026-07-13" },
+        { title: "쪽지시험", start: "2026-08-05", end: "2026-08-11" },
+        { title: "생각나눔", start: "2026-07-15", end: "2026-09-01" },
+        { title: "기말고사(종강)", start: "2026-08-28", end: "2026-09-01" },
+        { title: "성적확인", start: "2026-09-07", end: "2026-09-10" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "6월 10일 개강",
+      ranges: [
+        { title: "개강", start: "2026-06-10", end: "2026-06-10" },
+        { title: "탐구활동", start: "2026-07-01", end: "2026-07-14" },
+        { title: "과제", start: "2026-08-05", end: "2026-09-01" },
+        { title: "중간고사", start: "2026-07-31", end: "2026-08-03" },
+        { title: "쪽지시험", start: "2026-08-26", end: "2026-09-01" },
+        { title: "생각나눔", start: "2026-08-05", end: "2026-09-22" },
+        { title: "기말고사(종강)", start: "2026-09-18", end: "2026-09-22" },
+        { title: "성적확인", start: "2026-09-28", end: "2026-10-01" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "7월 1일 개강",
+      ranges: [
+        { title: "개강", start: "2026-07-01", end: "2026-07-01" },
+        { title: "탐구활동", start: "2026-07-22", end: "2026-08-04" },
+        { title: "과제", start: "2026-08-26", end: "2026-09-22" },
+        { title: "중간고사", start: "2026-08-21", end: "2026-08-24" },
+        { title: "쪽지시험", start: "2026-09-16", end: "2026-09-22" },
+        { title: "생각나눔", start: "2026-08-26", end: "2026-10-13" },
+        { title: "기말고사(종강)", start: "2026-10-09", end: "2026-10-13" },
+        { title: "성적확인", start: "2026-10-19", end: "2026-10-22" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "7월 22일 개강",
+      ranges: [
+        { title: "개강", start: "2026-07-22", end: "2026-07-22" },
+        { title: "탐구활동", start: "2026-08-12", end: "2026-08-25" },
+        { title: "과제", start: "2026-09-16", end: "2026-10-13" },
+        { title: "중간고사", start: "2026-09-11", end: "2026-09-14" },
+        { title: "쪽지시험", start: "2026-10-07", end: "2026-10-13" },
+        { title: "생각나눔", start: "2026-09-16", end: "2026-11-03" },
+        { title: "기말고사(종강)", start: "2026-10-30", end: "2026-11-03" },
+        { title: "성적확인", start: "2026-11-09", end: "2026-11-12" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "8월 12일 개강",
+      ranges: [
+        { title: "개강", start: "2026-08-12", end: "2026-08-12" },
+        { title: "탐구활동", start: "2026-09-02", end: "2026-09-15" },
+        { title: "과제", start: "2026-10-07", end: "2026-11-03" },
+        { title: "중간고사", start: "2026-10-02", end: "2026-10-05" },
+        { title: "쪽지시험", start: "2026-10-28", end: "2026-11-03" },
+        { title: "생각나눔", start: "2026-10-07", end: "2026-11-24" },
+        { title: "기말고사(종강)", start: "2026-11-20", end: "2026-11-24" },
+        { title: "성적확인", start: "2026-11-30", end: "2026-12-03" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "9월 2일 개강",
+      ranges: [
+        { title: "개강", start: "2026-09-02", end: "2026-09-02" },
+        { title: "탐구활동", start: "2026-09-23", end: "2026-10-06" },
+        { title: "과제", start: "2026-10-28", end: "2026-11-24" },
+        { title: "중간고사", start: "2026-10-23", end: "2026-10-26" },
+        { title: "쪽지시험", start: "2026-11-18", end: "2026-11-24" },
+        { title: "생각나눔", start: "2026-10-28", end: "2026-12-15" },
+        { title: "기말고사(종강)", start: "2026-12-11", end: "2026-12-15" },
+        { title: "성적확인", start: "2026-12-21", end: "2026-12-24" }
+      ]
+    },
+    {
+      institute: "globalinno",
+      label: "9월 16일 개강",
+      ranges: [
+        { title: "개강", start: "2026-09-16", end: "2026-09-16" },
+        { title: "탐구활동", start: "2026-10-07", end: "2026-10-20" },
+        { title: "과제", start: "2026-11-11", end: "2026-12-08" },
+        { title: "중간고사", start: "2026-11-06", end: "2026-11-09" },
+        { title: "쪽지시험", start: "2026-12-02", end: "2026-12-08" },
+        { title: "생각나눔", start: "2026-11-11", end: "2026-12-29" },
+        { title: "기말고사(종강)", start: "2026-12-25", end: "2026-12-29" },
+        { title: "성적확인", start: "2027-01-04", end: "2027-01-07" }
+      ]
+    },
+    {
+      institute: "itbank",
+      label: "1학기 7기수",
+      ranges: [
+        { title: "개강", start: "2026-04-30", end: "2026-04-30" },
+        { title: "오리엔테이션", start: "2026-04-30", end: "2026-05-13" },
+        { title: "진행단계평가", start: "2026-05-28", end: "2026-06-03" },
+        { title: "의견방", start: "2026-04-30", end: "2026-07-29" },
+        { title: "과제", start: "2026-07-09", end: "2026-07-29" },
+        { title: "중간고사", start: "2026-06-20", end: "2026-06-23" },
+        { title: "기말고사(종강)", start: "2026-08-08", end: "2026-08-12" },
+        { title: "성적확인", start: "2026-08-26", end: "2026-09-01" }
+      ]
+    },
+    {
+      institute: "itbank",
+      label: "1학기 8기수",
+      ranges: [
+        { title: "개강", start: "2026-05-16", end: "2026-05-16" },
+        { title: "오리엔테이션", start: "2026-05-16", end: "2026-05-29" },
+        { title: "진행단계평가", start: "2026-06-13", end: "2026-06-19" },
+        { title: "의견방", start: "2026-05-16", end: "2026-08-14" },
+        { title: "과제", start: "2026-07-25", end: "2026-08-14" },
+        { title: "중간고사", start: "2026-07-04", end: "2026-07-07" },
+        { title: "기말고사(종강)", start: "2026-08-22", end: "2026-08-28" },
+        { title: "성적확인", start: "2026-09-09", end: "2026-09-15" }
+      ]
+    },
+    {
+      institute: "itbank",
+      label: "2학기 1기수",
+      ranges: [
+        { title: "개강", start: "2026-05-29", end: "2026-05-29" },
+        { title: "오리엔테이션", start: "2026-05-29", end: "2026-06-11" },
+        { title: "진행단계평가", start: "2026-06-26", end: "2026-07-02" },
+        { title: "의견방", start: "2026-05-29", end: "2026-08-27" },
+        { title: "과제", start: "2026-08-07", end: "2026-08-27" },
+        { title: "중간고사", start: "2026-07-18", end: "2026-07-21" },
+        { title: "기말고사(종강)", start: "2026-09-05", end: "2026-09-10" },
+        { title: "성적확인", start: "2026-09-23", end: "2026-09-29" }
+      ]
+    },
+    {
+      institute: "itbank",
+      label: "2학기 2기수",
+      ranges: [
+        { title: "개강", start: "2026-06-30", end: "2026-06-30" },
+        { title: "오리엔테이션", start: "2026-06-30", end: "2026-07-13" },
+        { title: "진행단계평가", start: "2026-07-28", end: "2026-08-03" },
+        { title: "의견방", start: "2026-06-30", end: "2026-09-28" },
+        { title: "과제", start: "2026-09-08", end: "2026-09-28" },
+        { title: "중간고사", start: "2026-08-22", end: "2026-08-25" },
+        { title: "기말고사(종강)", start: "2026-10-10", end: "2026-10-12" },
+        { title: "성적확인", start: "2026-10-28", end: "2026-11-03" }
+      ]
+    },
+    {
+      institute: "itbank",
+      label: "2학기 3기수",
+      ranges: [
+        { title: "개강", start: "2026-07-31", end: "2026-07-31" },
+        { title: "오리엔테이션", start: "2026-07-31", end: "2026-08-13" },
+        { title: "진행단계평가", start: "2026-09-03", end: "2026-09-09" },
+        { title: "의견방", start: "2026-07-31", end: "2026-10-29" },
+        { title: "과제", start: "2026-10-09", end: "2026-10-29" },
+        { title: "중간고사", start: "2026-09-19", end: "2026-09-22" },
+        { title: "기말고사(종강)", start: "2026-11-07", end: "2026-11-12" },
+        { title: "성적확인", start: "2026-11-25", end: "2026-12-01" }
+      ]
+    },
+    {
+      institute: "ocu",
+      label: "1학기 7차",
+      ranges: [
+        { title: "개강", start: "2026-05-14", end: "2026-05-14" },
+        { title: "토론", start: "2026-05-28", end: "2026-06-24" },
+        { title: "쪽지시험", start: "2026-06-18", end: "2026-06-24" },
+        { title: "중간고사", start: "2026-07-04", end: "2026-07-07" },
+        { title: "과제", start: "2026-07-16", end: "2026-08-12" },
+        { title: "기말고사(종강)", start: "2026-08-22", end: "2026-08-26" },
+        { title: "성적확인", start: "2026-09-02", end: "2026-09-08" }
+      ]
+    },
+    {
+      institute: "ocu",
+      label: "2학기 1차",
+      ranges: [
+        { title: "개강", start: "2026-06-11", end: "2026-06-11" },
+        { title: "토론", start: "2026-06-25", end: "2026-07-22" },
+        { title: "쪽지시험", start: "2026-07-16", end: "2026-07-22" },
+        { title: "중간고사", start: "2026-08-01", end: "2026-08-04" },
+        { title: "과제", start: "2026-08-13", end: "2026-09-09" },
+        { title: "기말고사(종강)", start: "2026-09-19", end: "2026-09-23" },
+        { title: "성적확인", start: "2026-09-30", end: "2026-10-06" }
+      ]
+    },
+    {
+      institute: "ocu",
+      label: "2학기 2차",
+      ranges: [
+        { title: "개강", start: "2026-07-09", end: "2026-07-09" },
+        { title: "토론", start: "2026-07-23", end: "2026-08-19" },
+        { title: "쪽지시험", start: "2026-08-13", end: "2026-08-19" },
+        { title: "중간고사", start: "2026-08-29", end: "2026-09-01" },
+        { title: "과제", start: "2026-09-10", end: "2026-10-07" },
+        { title: "기말고사(종강)", start: "2026-10-17", end: "2026-10-21" },
+        { title: "성적확인", start: "2026-10-28", end: "2026-11-03" }
+      ]
+    },
+    {
+      institute: "ocu",
+      label: "2학기 3차",
+      ranges: [
+        { title: "개강", start: "2026-08-13", end: "2026-08-13" },
+        { title: "토론", start: "2026-08-27", end: "2026-09-23" },
+        { title: "쪽지시험", start: "2026-09-17", end: "2026-09-23" },
+        { title: "중간고사", start: "2026-10-03", end: "2026-10-06" },
+        { title: "과제", start: "2026-10-15", end: "2026-11-11" },
+        { title: "기말고사(종강)", start: "2026-11-21", end: "2026-11-25" },
+        { title: "성적확인", start: "2026-12-02", end: "2026-12-08" }
+      ]
+    },
+    {
+      institute: "ocu",
+      label: "2학기 4차",
+      ranges: [
+        { title: "개강", start: "2026-09-10", end: "2026-09-10" },
+        { title: "토론", start: "2026-09-24", end: "2026-10-21" },
+        { title: "쪽지시험", start: "2026-10-15", end: "2026-10-21" },
+        { title: "중간고사", start: "2026-10-31", end: "2026-11-03" },
+        { title: "과제", start: "2026-11-12", end: "2026-12-09" },
+        { title: "기말고사(종강)", start: "2026-12-19", end: "2026-12-23" },
+        { title: "성적확인", start: "2026-12-30", end: "2027-01-05" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "1학기 6기",
+      ranges: [
+        { title: "개강", start: "2026-04-28", end: "2026-04-28" },
+        { title: "학습계획서", start: "2026-04-28", end: "2026-06-22" },
+        { title: "토론", start: "2026-05-19", end: "2026-06-08" },
+        { title: "과제", start: "2026-05-19", end: "2026-07-13" },
+        { title: "중간고사", start: "2026-06-19", end: "2026-06-23" },
+        { title: "쪽지시험", start: "2026-07-14", end: "2026-07-27" },
+        { title: "기말고사(종강)", start: "2026-08-07", end: "2026-08-11" },
+        { title: "성적확인", start: "2026-08-21", end: "2026-08-24" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "2학기 1기",
+      ranges: [
+        { title: "개강", start: "2026-06-02", end: "2026-06-02" },
+        { title: "학습계획서", start: "2026-06-02", end: "2026-07-27" },
+        { title: "토론", start: "2026-06-23", end: "2026-07-13" },
+        { title: "과제", start: "2026-06-23", end: "2026-08-17" },
+        { title: "중간고사", start: "2026-07-24", end: "2026-07-28" },
+        { title: "쪽지시험", start: "2026-08-18", end: "2026-08-31" },
+        { title: "기말고사(종강)", start: "2026-09-11", end: "2026-09-15" },
+        { title: "성적확인", start: "2026-09-25", end: "2026-09-28" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "2학기 2기",
+      ranges: [
+        { title: "개강", start: "2026-06-30", end: "2026-06-30" },
+        { title: "학습계획서", start: "2026-06-30", end: "2026-08-24" },
+        { title: "토론", start: "2026-07-21", end: "2026-08-10" },
+        { title: "과제", start: "2026-07-21", end: "2026-09-14" },
+        { title: "중간고사", start: "2026-08-21", end: "2026-08-25" },
+        { title: "쪽지시험", start: "2026-09-15", end: "2026-09-28" },
+        { title: "기말고사(종강)", start: "2026-10-09", end: "2026-10-13" },
+        { title: "성적확인", start: "2026-10-23", end: "2026-10-26" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "2학기 3기",
+      ranges: [
+        { title: "개강", start: "2026-07-28", end: "2026-07-28" },
+        { title: "학습계획서", start: "2026-07-28", end: "2026-09-21" },
+        { title: "토론", start: "2026-08-18", end: "2026-09-07" },
+        { title: "과제", start: "2026-08-18", end: "2026-10-12" },
+        { title: "중간고사", start: "2026-09-18", end: "2026-09-22" },
+        { title: "쪽지시험", start: "2026-10-13", end: "2026-10-26" },
+        { title: "기말고사(종강)", start: "2026-11-06", end: "2026-11-10" },
+        { title: "성적확인", start: "2026-11-20", end: "2026-11-23" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "2학기 4기",
+      ranges: [
+        { title: "개강", start: "2026-09-01", end: "2026-09-01" },
+        { title: "학습계획서", start: "2026-09-01", end: "2026-10-26" },
+        { title: "토론", start: "2026-09-22", end: "2026-10-12" },
+        { title: "과제", start: "2026-09-22", end: "2026-11-16" },
+        { title: "중간고사", start: "2026-10-23", end: "2026-10-27" },
+        { title: "쪽지시험", start: "2026-11-17", end: "2026-11-30" },
+        { title: "기말고사(종강)", start: "2026-12-11", end: "2026-12-15" },
+        { title: "성적확인", start: "2026-12-25", end: "2026-12-28" }
+      ]
+    },
+    {
+      institute: "koredutech",
+      label: "2학기 5기",
+      ranges: [
+        { title: "개강", start: "2026-10-13", end: "2026-10-13" },
+        { title: "학습계획서", start: "2026-10-13", end: "2026-12-07" },
+        { title: "토론", start: "2026-11-03", end: "2026-11-23" },
+        { title: "과제", start: "2026-11-03", end: "2026-12-28" },
+        { title: "중간고사", start: "2026-12-04", end: "2026-12-08" },
+        { title: "쪽지시험", start: "2026-12-29", end: "2027-01-11" },
+        { title: "기말고사(종강)", start: "2027-01-22", end: "2027-01-26" },
+        { title: "성적확인", start: "2027-02-05", end: "2027-02-08" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "1학기 8차",
+      ranges: [
+        { title: "개강", start: "2026-05-06", end: "2026-05-06" },
+        { title: "토론", start: "2026-06-03", end: "2026-06-30" },
+        { title: "중간고사", start: "2026-06-26", end: "2026-06-29" },
+        { title: "과제", start: "2026-07-15", end: "2026-08-18" },
+        { title: "기말고사(종강)", start: "2026-08-14", end: "2026-08-18" },
+        { title: "성적확인", start: "2026-08-25", end: "2026-09-07" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "2학기 1차",
+      ranges: [
+        { title: "개강", start: "2026-05-20", end: "2026-05-20" },
+        { title: "토론", start: "2026-06-17", end: "2026-07-14" },
+        { title: "중간고사", start: "2026-07-10", end: "2026-07-13" },
+        { title: "과제", start: "2026-07-29", end: "2026-09-01" },
+        { title: "기말고사(종강)", start: "2026-08-28", end: "2026-09-01" },
+        { title: "성적확인", start: "2026-09-08", end: "2026-09-21" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "2학기 2차",
+      ranges: [
+        { title: "개강", start: "2026-06-03", end: "2026-06-03" },
+        { title: "토론", start: "2026-07-01", end: "2026-07-28" },
+        { title: "중간고사", start: "2026-07-24", end: "2026-07-27" },
+        { title: "과제", start: "2026-08-12", end: "2026-09-15" },
+        { title: "기말고사(종강)", start: "2026-09-11", end: "2026-09-15" },
+        { title: "성적확인", start: "2026-09-22", end: "2026-10-05" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "2학기 3차",
+      ranges: [
+        { title: "개강", start: "2026-07-01", end: "2026-07-01" },
+        { title: "토론", start: "2026-07-29", end: "2026-08-25" },
+        { title: "중간고사", start: "2026-08-21", end: "2026-08-24" },
+        { title: "과제", start: "2026-09-09", end: "2026-10-13" },
+        { title: "기말고사(종강)", start: "2026-10-09", end: "2026-10-13" },
+        { title: "성적확인", start: "2026-10-20", end: "2026-11-02" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "2학기 4차",
+      ranges: [
+        { title: "개강", start: "2026-08-05", end: "2026-08-05" },
+        { title: "토론", start: "2026-09-02", end: "2026-09-29" },
+        { title: "중간고사", start: "2026-09-25", end: "2026-09-28" },
+        { title: "과제", start: "2026-10-14", end: "2026-11-17" },
+        { title: "기말고사(종강)", start: "2026-11-13", end: "2026-11-17" },
+        { title: "성적확인", start: "2026-11-24", end: "2026-12-07" }
+      ]
+    },
+    {
+      institute: "soongsil",
+      label: "2학기 5차",
+      ranges: [
+        { title: "개강", start: "2026-09-02", end: "2026-09-02" },
+        { title: "토론", start: "2026-09-30", end: "2026-10-27" },
+        { title: "중간고사", start: "2026-10-23", end: "2026-10-26" },
+        { title: "과제", start: "2026-11-11", end: "2026-12-15" },
+        { title: "기말고사(종강)", start: "2026-12-11", end: "2026-12-15" },
+        { title: "성적확인", start: "2026-12-22", end: "2027-01-04" }
+      ]
+    },
+    {
+      institute: "newm",
+      label: "1학기 7차",
+      ranges: [
+        { title: "개강", start: "2026-05-19", end: "2026-05-19" },
+        { title: "중간고사", start: "2026-07-10", end: "2026-07-13" },
+        { title: "중간성적확인", start: "2026-07-23", end: "2026-07-24" },
+        { title: "과제제출기간", start: "2026-07-14", end: "2026-07-27" },
+        { title: "기말고사(종강)", start: "2026-08-28", end: "2026-08-31" },
+        { title: "기말성적확인", start: "2026-09-10", end: "2026-09-11" }
+      ]
+    },
+    {
+      institute: "newm",
+      label: "2학기 1차",
+      ranges: [
+        { title: "개강", start: "2026-06-09", end: "2026-06-09" },
+        { title: "중간고사", start: "2026-08-01", end: "2026-08-03" },
+        { title: "중간성적확인", start: "2026-08-13", end: "2026-08-14" },
+        { title: "과제제출기간", start: "2026-08-04", end: "2026-08-17" },
+        { title: "기말고사(종강)", start: "2026-09-18", end: "2026-09-21" },
+        { title: "기말성적확인", start: "2026-10-01", end: "2026-10-02" }
+      ]
+    },
+    {
+      institute: "newm",
+      label: "2학기 2차",
+      ranges: [
+        { title: "개강", start: "2026-07-07", end: "2026-07-07" },
+        { title: "중간고사", start: "2026-08-28", end: "2026-08-31" },
+        { title: "중간성적확인", start: "2026-09-10", end: "2026-09-11" },
+        { title: "과제제출기간", start: "2026-09-01", end: "2026-09-14" },
+        { title: "기말고사(종강)", start: "2026-10-16", end: "2026-10-19" },
+        { title: "기말성적확인", start: "2026-10-23", end: "2026-10-24" }
+      ]
+    },
+    {
+      institute: "newm",
+      label: "2학기 3차",
+      ranges: [
+        { title: "개강", start: "2026-08-04", end: "2026-08-04" },
+        { title: "중간고사", start: "2026-09-25", end: "2026-09-28" },
+        { title: "중간성적확인", start: "2026-10-08", end: "2026-10-09" },
+        { title: "과제제출기간", start: "2026-09-29", end: "2026-10-12" },
+        { title: "기말고사(종강)", start: "2026-11-13", end: "2026-11-16" },
+        { title: "기말성적확인", start: "2026-11-26", end: "2026-11-27" }
+      ]
+    },
+    {
+      institute: "newm",
+      label: "2학기 4차",
+      ranges: [
+        { title: "개강", start: "2026-09-01", end: "2026-09-01" },
+        { title: "중간고사", start: "2026-10-23", end: "2026-10-26" },
+        { title: "중간성적확인", start: "2026-11-05", end: "2026-11-06" },
+        { title: "과제제출기간", start: "2026-10-27", end: "2026-11-09" },
+        { title: "기말고사(종강)", start: "2026-12-11", end: "2026-12-14" },
+        { title: "기말성적확인", start: "2026-12-24", end: "2026-12-24" }
+      ]
     }
   ];
 
@@ -525,22 +1460,52 @@
   });
 
   const state = {
-    current: new Date()
+    current: new Date(),
+    activeInstitute: null
   };
   state.current.setDate(1);
 
+  // 퀵메뉴: 자격증/교원 관련 사이트 바로가기
+  const quickMenuLinks = [
+    { name: "사회복지사", url: "https://www.welfare.net/lic/" },
+    { name: "보육교사", url: "https://chrd.childcare.go.kr/ctis/index.jsp" },
+    { name: "평생교육사", url: "https://lledu.nile.or.kr/" },
+    { name: "한국어교원", url: "https://kteacher.korean.go.kr/" },
+    { name: "큐넷", url: "https://www.q-net.or.kr/man001.do?gSite=Q&gId=" },
+    { name: "독학학위제", url: "https://bdes.nile.or.kr/nile/base/bdesMain.do?" },
+    { name: "서트피아", url: "https://www.certpia.com/renewalType1/" }
+  ];
+
+  function renderQuickMenu() {
+    const listEl = document.getElementById("quickMenuList");
+    listEl.innerHTML = "";
+    quickMenuLinks.forEach(item => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = item.url;
+      a.textContent = item.name;
+      a.target = "_blank";
+      a.rel = "noopener";
+      li.appendChild(a);
+      listEl.appendChild(li);
+    });
+  }
+  renderQuickMenu();
+
+  document.getElementById("quickMenuToggle").addEventListener("click", () => {
+    document.getElementById("quickMenuWrap").classList.toggle("open");
+  });
+
   const monthTitleEl = document.getElementById("monthTitle");
-  const weekdayRowEl = document.getElementById("weekdayRow");
-  const daysGridEl = document.getElementById("daysGrid");
+  const calendarTableEl = document.getElementById("calendarTable");
   const legendEl = document.getElementById("legend");
 
   function renderWeekdayRow() {
-    weekdayRowEl.innerHTML = "";
     weekdays.forEach((label, idx) => {
       const cell = document.createElement("div");
       cell.className = "weekday-cell" + (idx === 0 ? " sun" : idx === 6 ? " sat" : "");
       cell.textContent = label;
-      weekdayRowEl.appendChild(cell);
+      calendarTableEl.appendChild(cell);
     });
   }
 
@@ -582,20 +1547,93 @@
   memoOverlay.addEventListener("click", (e) => {
     if (e.target === memoOverlay) closeMemo();
   });
+
+  const todayOverlay = document.getElementById("todayOverlay");
+  const todayModalTitle = document.getElementById("todayModalTitle");
+  const todayModalList = document.getElementById("todayModalList");
+
+  function openTodayModal() {
+    const now = new Date();
+    const todayKey = formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+    todayModalTitle.textContent = `${formatDisplayDate(todayKey)} 일정`;
+
+    const todaysEvents = events.filter(ev => ev.date === todayKey);
+    todayModalList.innerHTML = "";
+
+    if (todaysEvents.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "today-modal-empty";
+      empty.textContent = "오늘 예정된 학사일정이 없습니다.";
+      todayModalList.appendChild(empty);
+    } else {
+      todaysEvents.forEach(ev => {
+        const item = document.createElement("div");
+        item.className = "today-modal-item";
+
+        const head = document.createElement("div");
+        head.className = "today-modal-item-head";
+        head.innerHTML = `<span class="today-modal-dot" style="background:${ev.color}"></span>${ev.institute} · ${ev.batchLabel}`;
+        item.appendChild(head);
+
+        const category = document.createElement("div");
+        category.className = "today-modal-category";
+        category.textContent = ev.category;
+        item.appendChild(category);
+
+        const period = document.createElement("div");
+        period.className = "today-modal-period";
+        period.textContent = ev.start === ev.end
+          ? formatDisplayDate(ev.start)
+          : `${formatDisplayDate(ev.start)} ~ ${formatDisplayDate(ev.end)}`;
+        item.appendChild(period);
+
+        item.addEventListener("click", () => openMemo(ev));
+        todayModalList.appendChild(item);
+      });
+    }
+
+    todayOverlay.classList.add("open");
+  }
+
+  function closeTodayModal() {
+    todayOverlay.classList.remove("open");
+  }
+
+  document.getElementById("todayClose").addEventListener("click", closeTodayModal);
+  todayOverlay.addEventListener("click", (e) => {
+    if (e.target === todayOverlay) closeTodayModal();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeMemo();
+    if (e.key === "Escape") { closeMemo(); closeTodayModal(); }
   });
 
   function renderLegend() {
     legendEl.innerHTML = "";
+    legendEl.classList.toggle("filtering", !!state.activeInstitute);
+
     const seen = new Map();
     events.forEach(ev => {
       if (!seen.has(ev.institute)) seen.set(ev.institute, ev.color);
     });
+
+    const allItem = document.createElement("div");
+    allItem.className = "legend-item legend-all";
+    allItem.textContent = "전체보기";
+    allItem.addEventListener("click", () => {
+      state.activeInstitute = null;
+      render();
+    });
+    legendEl.appendChild(allItem);
+
     seen.forEach((color, institute) => {
       const item = document.createElement("div");
-      item.className = "legend-item";
+      item.className = "legend-item" + (state.activeInstitute === institute ? " active" : "");
       item.innerHTML = `<span class="legend-dot" style="background:${color}"></span>${institute}`;
+      item.addEventListener("click", () => {
+        state.activeInstitute = state.activeInstitute === institute ? null : institute;
+        render();
+      });
       legendEl.appendChild(item);
     });
   }
@@ -616,7 +1654,8 @@
 
     const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
 
-    daysGridEl.innerHTML = "";
+    calendarTableEl.innerHTML = "";
+    renderWeekdayRow();
 
     for (let i = 0; i < totalCells; i++) {
       const cell = document.createElement("div");
@@ -638,7 +1677,7 @@
       if (cellMonth < 0) { cellMonth = 11; cellYear -= 1; }
       if (cellMonth > 11) { cellMonth = 0; cellYear += 1; }
 
-      cell.className = "day-cell" + (outside ? " outside" : "") + (col === 0 ? " sun" : col === 6 ? " sat" : "");
+      cell.className = "day-cell" + (outside ? " outside" : "") + (col === 0 ? " sun" : col === 6 ? " sat" : "") + (col === 6 ? " col-last" : "");
 
       if (!outside && isCurrentMonth && dayNum === today.getDate()) {
         cell.classList.add("today");
@@ -654,6 +1693,7 @@
       const dateKey = formatDateKey(cellYear, cellMonth, dayNum);
       events
         .filter(ev => ev.date === dateKey)
+        .filter(ev => !state.activeInstitute || ev.institute === state.activeInstitute)
         .forEach(ev => {
           const chip = document.createElement("div");
           chip.className = "event-chip";
@@ -665,12 +1705,11 @@
         });
       cell.appendChild(eventsWrap);
 
-      daysGridEl.appendChild(cell);
+      calendarTableEl.appendChild(cell);
     }
   }
 
   function render() {
-    renderWeekdayRow();
     renderLegend();
     renderCalendar();
   }
@@ -689,9 +1728,71 @@
     state.current = new Date();
     state.current.setDate(1);
     render();
+    openTodayModal();
   });
 
   render();
+
+  // 국가평생교육진흥원 학점은행 홈페이지(cb.or.kr) 로고 (data URI로 내장)
+  const cbLogoDataUri = "data:image/png;base64,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";
+
+  // 한국평생교육관리센터 로고 (data URI로 내장)
+  const centerLogoDataUri = "data:image/png;base64,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";
+  document.getElementById("monthLogo").src = centerLogoDataUri;
+
+  const noticeBoard = {
+    label: "학점은행제 공지사항",
+    moreUrl: "https://www.cb.or.kr/creditbank/impartion/nImpartion1_List.do?m_szKind=1",
+    items: [
+      { title: "2026년 8월(후기) 학위수여 주요일정 안내", date: "2026.07.24", num: "11099" },
+      { title: "2026년 8월(후기) 학위신청 추가 및 취소접수 운영 안내", date: "2026.07.16", num: "11098" },
+      { title: "온라인 학습설계 상담 일시 중단 안내", date: "2026.07.15", num: "11097" },
+      { title: "[안내] 학점은행제 정보시스템 서비스 일시 중단 안내", date: "2026.06.22", num: "11095" },
+      { title: "2026년 8월(후기) 학위신청 및 3분기 학습자등록·학점인정신청 접수계획", date: "2026.06.05", num: "11092" }
+    ]
+  };
+
+  function noticeDetailUrl(num) {
+    return `https://www.cb.or.kr/creditbank/impartion/nImpartion1_View.do?m_szNum=${num}&m_szOpenGbn=Y`;
+  }
+
+  function renderNoticeBoard() {
+    const logoRowEl = document.getElementById("noticeLogoRow");
+    const listEl = document.getElementById("noticeList");
+    const moreEl = document.getElementById("noticeMore");
+
+    logoRowEl.innerHTML = "";
+    const logo = document.createElement("img");
+    logo.src = cbLogoDataUri;
+    logo.alt = "학점은행제";
+    logoRowEl.appendChild(logo);
+
+    listEl.innerHTML = "";
+    noticeBoard.items.forEach(item => {
+      const li = document.createElement("li");
+      li.className = "notice-item";
+
+      const t = document.createElement("a");
+      t.className = "notice-title";
+      t.textContent = item.title;
+      t.title = item.title;
+      t.href = noticeDetailUrl(item.num);
+      t.target = "_blank";
+      t.rel = "noopener";
+
+      const d = document.createElement("span");
+      d.className = "notice-date";
+      d.textContent = item.date;
+
+      li.appendChild(t);
+      li.appendChild(d);
+      listEl.appendChild(li);
+    });
+
+    moreEl.href = noticeBoard.moreUrl;
+  }
+
+  renderNoticeBoard();
 </script>
 </body>
 </html>
