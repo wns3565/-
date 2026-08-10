@@ -791,7 +791,9 @@
       </div>
       <div class="header-actions">
         <button id="taskBtn">과제</button>
+        <button id="yesterdayBtn">어제 일정</button>
         <button id="todayBtn">오늘 일정</button>
+        <button id="tomorrowBtn">내일 일정</button>
       </div>
     </div>
 
@@ -1818,21 +1820,23 @@
   const todayModalTitle = document.getElementById("todayModalTitle");
   const todayModalList = document.getElementById("todayModalList");
 
-  function openTodayModal() {
+  function openDayModal(dayOffset) {
     const now = new Date();
-    const todayKey = formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
-    todayModalTitle.textContent = `${formatDisplayDate(todayKey)} 일정`;
+    now.setDate(now.getDate() + dayOffset);
+    const dayKey = formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+    const label = dayOffset === -1 ? "어제" : dayOffset === 1 ? "내일" : "오늘";
+    todayModalTitle.textContent = `${formatDisplayDate(dayKey)} 일정`;
 
-    const todaysEvents = events.filter(ev => ev.date === todayKey);
+    const dayEvents = events.filter(ev => ev.date === dayKey);
     todayModalList.innerHTML = "";
 
-    if (todaysEvents.length === 0) {
+    if (dayEvents.length === 0) {
       const empty = document.createElement("div");
       empty.className = "today-modal-empty";
-      empty.textContent = "오늘 예정된 학사일정이 없습니다.";
+      empty.textContent = `${label} 예정된 학사일정이 없습니다.`;
       todayModalList.appendChild(empty);
     } else {
-      todaysEvents.forEach(ev => {
+      dayEvents.forEach(ev => {
         const item = document.createElement("div");
         item.className = "today-modal-item";
 
@@ -2004,11 +2008,19 @@
     render();
   });
 
+  document.getElementById("yesterdayBtn").addEventListener("click", () => {
+    openDayModal(-1);
+  });
+
   document.getElementById("todayBtn").addEventListener("click", () => {
     state.current = new Date();
     state.current.setDate(1);
     render();
-    openTodayModal();
+    openDayModal(0);
+  });
+
+  document.getElementById("tomorrowBtn").addEventListener("click", () => {
+    openDayModal(1);
   });
 
   render();
