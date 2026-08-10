@@ -314,6 +314,20 @@
     cursor: pointer;
   }
 
+  .header-actions #taskBtn {
+    background: #eceef1;
+    padding-left: 21px;
+    padding-right: 21px;
+    font-size: 26px;
+  }
+
+  .header-actions #todayBtn {
+    padding: 8px 28px;
+    border-radius: 20px;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
   .header-actions button:hover {
     background: #eef0f4;
   }
@@ -671,6 +685,88 @@
     font-size: 14px;
     padding: 30px 0;
   }
+
+  .task-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .task-overlay.open {
+    display: flex;
+  }
+
+  .task-modal {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 28px 24px 24px;
+  }
+
+  .task-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .task-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 18px;
+    padding-right: 20px;
+  }
+
+  .task-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .task-modal-box {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 12px;
+    line-height: 1.4;
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+
+  .task-modal-box:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .task-modal-box.kakao {
+    background: #fee500;
+    color: #3c1e1e;
+  }
+
+  .task-modal-box.drive {
+    background: #34a853;
+  }
 </style>
 </head>
 <body>
@@ -694,7 +790,8 @@
         <img class="month-logo" id="monthLogo" alt="한국평생교육관리센터">
       </div>
       <div class="header-actions">
-        <button id="todayBtn">오늘</button>
+        <button id="taskBtn">과제</button>
+        <button id="todayBtn">오늘 일정</button>
       </div>
     </div>
 
@@ -738,6 +835,17 @@
       <button class="today-close" id="todayClose" aria-label="닫기">✕</button>
       <div class="today-modal-title" id="todayModalTitle"></div>
       <div class="today-modal-list" id="todayModalList"></div>
+    </div>
+  </div>
+
+  <div class="task-overlay" id="taskOverlay">
+    <div class="task-modal">
+      <button class="task-close" id="taskClose" aria-label="닫기">✕</button>
+      <div class="task-modal-title">과제</div>
+      <div class="task-modal-grid">
+        <a class="task-modal-box kakao" href="https://open.kakao.com/o/sPGMkIUf" target="_blank" rel="noopener">과제 제작요청</a>
+        <a class="task-modal-box drive" href="https://drive.google.com/drive/folders/1kVLY2TUKow3hVNyVNEWxkwTfjycyKjsI?usp=drive_link" target="_blank" rel="noopener">과제 드라이브</a>
+      </div>
     </div>
   </div>
 
@@ -1762,8 +1870,22 @@
     if (e.target === todayOverlay) closeTodayModal();
   });
 
+  const taskOverlay = document.getElementById("taskOverlay");
+
+  function closeTaskModal() {
+    taskOverlay.classList.remove("open");
+  }
+
+  document.getElementById("taskBtn").addEventListener("click", () => {
+    taskOverlay.classList.add("open");
+  });
+  document.getElementById("taskClose").addEventListener("click", closeTaskModal);
+  taskOverlay.addEventListener("click", (e) => {
+    if (e.target === taskOverlay) closeTaskModal();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeMemo(); closeTodayModal(); }
+    if (e.key === "Escape") { closeMemo(); closeTodayModal(); closeTaskModal(); }
   });
 
   function renderLegend() {
