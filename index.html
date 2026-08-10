@@ -202,6 +202,56 @@
     color: var(--accent);
   }
 
+  .shortcut-board {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .shortcut-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .shortcut-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .shortcut-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 64px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+
+  .shortcut-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .shortcut-btn.row-1 { background: #7ba8ff; }
+  .shortcut-btn.row-2 { background: #4f6df5; }
+  .shortcut-btn.row-3 { background: #2f47c9; }
+
+  @media (max-width: 700px) {
+    .shortcut-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
   .calendar-header {
     display: flex;
     align-items: center;
@@ -662,6 +712,11 @@
     <ul class="notice-list" id="noticeList"></ul>
     <a class="notice-more" id="noticeMore" href="#" target="_blank" rel="noopener">더보기</a>
   </aside>
+
+  <div class="shortcut-board">
+    <div class="shortcut-title">바로가기</div>
+    <div class="shortcut-grid" id="shortcutGrid"></div>
+  </div>
   </div>
 
   <div class="memo-overlay" id="memoOverlay">
@@ -1793,6 +1848,38 @@
   }
 
   renderNoticeBoard();
+
+  // 학점은행제 관련 바로가기 링크 (4x3 그리드)
+  const shortcutLinks = [
+    { name: "학점은행제 안내영상", url: "https://www.youtube.com/watch?v=Hl0PnHST1YQ&feature=youtu.be" },
+    { name: "온라인 학습자등록 신청", url: "https://www.youtube.com/watch?v=whZNCWc7C7c" },
+    { name: "온라인 증명서 발급방법", url: "https://www.youtube.com/watch?v=vy6TbBD1I6E" },
+    { name: "자주하는 질문", url: "https://www.cb.or.kr/creditbank/stuHelp/nStuHelp3_1.do?m_szTopChk=CHK" },
+    { name: "온라인 학점인정신청(평가인정 학습과정/온라인수업)", url: "https://www.youtube.com/watch?v=crXq4Es5OrU" },
+    { name: "온라인 학점인정신청(학점인정 대상학교/전적대학점)", url: "https://www.youtube.com/watch?v=iu3I5Ur0ots" },
+    { name: "온라인 학점인정신청(자격)", url: "https://www.youtube.com/watch?v=Xt6iY_w__GM" },
+    { name: "온라인 학점인정신청(독학학위제)", url: "https://www.youtube.com/watch?v=OP7IZmGTmSw" },
+    { name: "학점인정 표준 DB", url: "https://www.cb.or.kr/creditbank/stuHelp/nStuHelp7_1.do" },
+    { name: "자격증 검색 [학점인정 관련 자격]", url: "https://www.cb.or.kr/creditbank/eduIntro/nEduIntro2_4_1.do" },
+    { name: "교육훈련기관조회", url: "https://www.cb.or.kr/creditbank/eduOrg/nEduOrg1_1_List.do" },
+    { name: "표준교육과정 조회", url: "https://www.cb.or.kr/creditbank/stdPro/nStdPro1_1.do" }
+  ];
+
+  function renderShortcutGrid() {
+    const gridEl = document.getElementById("shortcutGrid");
+    gridEl.innerHTML = "";
+    shortcutLinks.forEach((item, idx) => {
+      const rowNum = Math.floor(idx / 4) + 1;
+      const a = document.createElement("a");
+      a.className = `shortcut-btn row-${rowNum}`;
+      a.textContent = item.name;
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      gridEl.appendChild(a);
+    });
+  }
+  renderShortcutGrid();
 </script>
 </body>
 </html>
