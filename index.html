@@ -252,6 +252,176 @@
     .shortcut-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
+  .my-board {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .my-board-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .my-board-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .my-board-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .my-board-item:last-child {
+    border-bottom: none;
+  }
+
+  .my-board-item:hover .my-board-item-title {
+    text-decoration: underline;
+  }
+
+  .my-board-item-title {
+    font-size: 13px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .my-board-item-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex: none;
+  }
+
+  .my-board-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 16px 0;
+  }
+
+  .board-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .board-overlay.open {
+    display: flex;
+  }
+
+  .board-modal {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 28px 24px 24px;
+  }
+
+  .board-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .board-modal-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .board-modal-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-right: 20px;
+  }
+
+  .board-modal-content {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .board-list-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .board-list-overlay.open {
+    display: flex;
+  }
+
+  .board-list-modal {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 28px 24px 24px;
+  }
+
+  .board-list-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .board-list-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-right: 20px;
+  }
+
   .calendar-header {
     display: flex;
     align-items: center;
@@ -297,6 +467,24 @@
     height: 26px;
     width: auto;
     margin-left: 6px;
+  }
+
+  .board-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex: none;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+
+  .board-btn:hover {
+    filter: brightness(1.08);
   }
 
   .header-actions {
@@ -787,6 +975,7 @@
         <button id="prevMonth" aria-label="이전 달">‹</button>
         <div class="month-title" id="monthTitle"></div>
         <button id="nextMonth" aria-label="다음 달">›</button>
+        <button id="boardBtn" class="board-btn">3부서 공지사항</button>
         <img class="month-logo" id="monthLogo" alt="한국평생교육관리센터">
       </div>
       <div class="header-actions">
@@ -815,6 +1004,11 @@
   <div class="shortcut-board">
     <div class="shortcut-title">바로가기</div>
     <div class="shortcut-grid" id="shortcutGrid"></div>
+  </div>
+
+  <div class="my-board">
+    <div class="my-board-title">3부서 공지사항</div>
+    <ul class="my-board-list" id="myBoardList"></ul>
   </div>
   </div>
 
@@ -848,6 +1042,23 @@
         <a class="task-modal-box kakao" href="https://open.kakao.com/o/sPGMkIUf" target="_blank" rel="noopener">과제 제작요청</a>
         <a class="task-modal-box drive" href="https://drive.google.com/drive/folders/1kVLY2TUKow3hVNyVNEWxkwTfjycyKjsI?usp=drive_link" target="_blank" rel="noopener">과제 드라이브</a>
       </div>
+    </div>
+  </div>
+
+  <div class="board-list-overlay" id="boardListOverlay">
+    <div class="board-list-modal">
+      <button class="board-list-close" id="boardListClose" aria-label="닫기">✕</button>
+      <div class="board-list-title">3부서 공지사항</div>
+      <ul class="my-board-list" id="boardListItems"></ul>
+    </div>
+  </div>
+
+  <div class="board-overlay" id="boardOverlay">
+    <div class="board-modal">
+      <button class="board-close" id="boardClose" aria-label="닫기">✕</button>
+      <div class="board-modal-date" id="boardModalDate"></div>
+      <div class="board-modal-title" id="boardModalTitle"></div>
+      <div class="board-modal-content" id="boardModalContent"></div>
     </div>
   </div>
 
@@ -1888,8 +2099,87 @@
     if (e.target === taskOverlay) closeTaskModal();
   });
 
+  // 3부서 공지사항: 항목은 이 배열에 직접 추가합니다 (title, date "YYYY.MM.DD", content)
+  const myBoard = {
+    items: []
+  };
+
+  const boardOverlay = document.getElementById("boardOverlay");
+  const boardModalDate = document.getElementById("boardModalDate");
+  const boardModalTitle = document.getElementById("boardModalTitle");
+  const boardModalContent = document.getElementById("boardModalContent");
+
+  function openBoardItem(item) {
+    boardModalDate.textContent = item.date;
+    boardModalTitle.textContent = item.title;
+    boardModalContent.textContent = item.content;
+    boardOverlay.classList.add("open");
+  }
+
+  function closeBoardModal() {
+    boardOverlay.classList.remove("open");
+  }
+
+  document.getElementById("boardClose").addEventListener("click", closeBoardModal);
+  boardOverlay.addEventListener("click", (e) => {
+    if (e.target === boardOverlay) closeBoardModal();
+  });
+
+  function renderBoardItems(listEl, emptyText) {
+    listEl.innerHTML = "";
+
+    if (myBoard.items.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "my-board-empty";
+      empty.textContent = emptyText;
+      listEl.appendChild(empty);
+      return;
+    }
+
+    myBoard.items.forEach(item => {
+      const li = document.createElement("li");
+      li.className = "my-board-item";
+
+      const t = document.createElement("span");
+      t.className = "my-board-item-title";
+      t.textContent = item.title;
+      t.title = item.title;
+
+      const d = document.createElement("span");
+      d.className = "my-board-item-date";
+      d.textContent = item.date;
+
+      li.appendChild(t);
+      li.appendChild(d);
+      li.addEventListener("click", () => openBoardItem(item));
+      listEl.appendChild(li);
+    });
+  }
+
+  function renderMyBoard() {
+    renderBoardItems(document.getElementById("myBoardList"), "등록된 메모가 없습니다.");
+  }
+  renderMyBoard();
+
+  const boardListOverlay = document.getElementById("boardListOverlay");
+
+  function openBoardList() {
+    renderBoardItems(document.getElementById("boardListItems"), "등록된 공지사항이 없습니다.");
+    boardListOverlay.classList.add("open");
+  }
+
+  function closeBoardList() {
+    boardListOverlay.classList.remove("open");
+  }
+
+  document.getElementById("boardBtn").addEventListener("click", openBoardList);
+  document.getElementById("boardListClose").addEventListener("click", closeBoardList);
+  boardListOverlay.addEventListener("click", (e) => {
+    if (e.target === boardListOverlay) closeBoardList();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeMemo(); closeTodayModal(); closeTaskModal(); }
+    if (e.key === "Escape") { closeMemo(); closeTodayModal(); closeTaskModal(); closeBoardModal(); closeBoardList(); }
   });
 
   function renderLegend() {
