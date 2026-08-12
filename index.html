@@ -978,7 +978,7 @@
         <img class="month-logo" id="monthLogo" alt="한국평생교육관리센터">
       </div>
       <div class="header-actions">
-        <button id="boardBtn" class="board-btn">3부서 공지사항</button>
+        <button id="boardBtn" class="board-btn">교육원 추가모집</button>
         <button id="taskBtn">과제</button>
         <button id="yesterdayBtn">어제 일정</button>
         <button id="todayBtn">오늘 일정</button>
@@ -1007,7 +1007,7 @@
   </div>
 
   <div class="my-board">
-    <div class="my-board-title">3부서 공지사항</div>
+    <div class="my-board-title">교육원 추가모집</div>
     <ul class="my-board-list" id="myBoardList"></ul>
   </div>
   </div>
@@ -1048,7 +1048,7 @@
   <div class="board-list-overlay" id="boardListOverlay">
     <div class="board-list-modal">
       <button class="board-list-close" id="boardListClose" aria-label="닫기">✕</button>
-      <div class="board-list-title">3부서 공지사항</div>
+      <div class="board-list-title">교육원 추가모집</div>
       <ul class="my-board-list" id="boardListItems"></ul>
     </div>
   </div>
@@ -2099,9 +2099,20 @@
     if (e.target === taskOverlay) closeTaskModal();
   });
 
-  // 3부서 공지사항: 항목은 이 배열에 직접 추가합니다 (title, date "YYYY.MM.DD", content)
+  // 교육원 추가모집: 항목은 이 배열에 직접 추가합니다 (title, date "YYYY.MM.DD", content)
   const myBoard = {
-    items: []
+    items: [
+      {
+        title: "해밀원격 2-4기수(8월12일 개강) 추가모집",
+        date: "2026.08.12",
+        content: "- 추가 모집기간 : ~ 8월 23일 (일)까지.\n- 환불은 개강일 기준으로 처리됩니다.\n- 수강신청 가능 과목은 홈페이지 [8/12 개강반] 확인 가능."
+      },
+      {
+        title: "숭실원격 2-4기수(8월5일 개강) 추가모집",
+        date: "2026.08.12",
+        content: "숭실원격 2-4기수(8월5일 개강) 추가모집\n8/18(월) 오후 5시까지 접수 가능합니다."
+      }
+    ]
   };
 
   const boardOverlay = document.getElementById("boardOverlay");
