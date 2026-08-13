@@ -300,12 +300,6 @@
     min-width: 0;
   }
 
-  .my-board-item-date {
-    font-size: 11px;
-    color: var(--text-muted);
-    flex: none;
-  }
-
   .my-board-empty {
     text-align: center;
     color: var(--text-muted);
@@ -351,12 +345,6 @@
     cursor: pointer;
     line-height: 1;
     padding: 4px;
-  }
-
-  .board-modal-date {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 6px;
   }
 
   .board-modal-title {
@@ -1056,7 +1044,6 @@
   <div class="board-overlay" id="boardOverlay">
     <div class="board-modal">
       <button class="board-close" id="boardClose" aria-label="닫기">✕</button>
-      <div class="board-modal-date" id="boardModalDate"></div>
       <div class="board-modal-title" id="boardModalTitle"></div>
       <div class="board-modal-content" id="boardModalContent"></div>
     </div>
@@ -2103,6 +2090,11 @@
   const myBoard = {
     items: [
       {
+        title: "글로벌 8월12일 개강반 추가모집",
+        date: "2026.08.13",
+        content: "8/12일 개강반 추가모집 기간은 8/31일 월요일까지 가능합니다."
+      },
+      {
         title: "에이플러스 8월11일 개강반 추가모집",
         date: "2026.08.12",
         content: "▣ 2026년 08월 11일 개강반(2026년 2학기 4기) / 1월 학점인정신청 가능\n  → 대면, 사복실습 과정 제외 / 전공별 일부 과정 제외, 이론 운영 전과정 개설\n  ★ 08월 23일(일) 까지 추가모집 중 ★"
@@ -2121,12 +2113,10 @@
   };
 
   const boardOverlay = document.getElementById("boardOverlay");
-  const boardModalDate = document.getElementById("boardModalDate");
   const boardModalTitle = document.getElementById("boardModalTitle");
   const boardModalContent = document.getElementById("boardModalContent");
 
   function openBoardItem(item) {
-    boardModalDate.textContent = item.date;
     boardModalTitle.textContent = item.title;
     boardModalContent.textContent = item.content;
     boardOverlay.classList.add("open");
@@ -2161,12 +2151,7 @@
       t.textContent = item.title;
       t.title = item.title;
 
-      const d = document.createElement("span");
-      d.className = "my-board-item-date";
-      d.textContent = item.date;
-
       li.appendChild(t);
-      li.appendChild(d);
       li.addEventListener("click", () => openBoardItem(item));
       listEl.appendChild(li);
     });
