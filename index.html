@@ -571,6 +571,13 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .calendar-grid:active {
+    cursor: grabbing;
   }
 
   .calendar-table {
@@ -2553,6 +2560,32 @@
   document.getElementById("nextMonth").addEventListener("click", () => {
     state.current.setMonth(state.current.getMonth() + 1);
     render();
+  });
+
+  // 달력을 마우스/터치로 드래그하면 이전/다음 달로 이동
+  const calendarGridEl = document.querySelector(".calendar-grid");
+  let dragStartX = null;
+  let dragStartY = null;
+
+  calendarGridEl.addEventListener("pointerdown", (e) => {
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+  });
+
+  calendarGridEl.addEventListener("pointerup", (e) => {
+    if (dragStartX === null) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    dragStartX = null;
+
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      state.current.setMonth(state.current.getMonth() + (dx < 0 ? 1 : -1));
+      render();
+    }
+  });
+
+  calendarGridEl.addEventListener("pointerleave", () => {
+    dragStartX = null;
   });
 
   document.getElementById("yesterdayBtn").addEventListener("click", () => {
