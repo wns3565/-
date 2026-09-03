@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>게시판</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #e2e4e9;
+    --text: #1f2430;
+    --text-muted: #8a8f9a;
+    --accent: #4f6df5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .page-wrap {
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .back-tab {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 0 12px 12px 0;
+    padding: 16px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.3;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+  }
+
+  .back-arrow {
+    font-size: 15px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .admin-area {
+    display: flex;
+    gap: 8px;
+  }
+
+  .admin-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .admin-btn:hover {
+    background: #eef0f4;
+  }
+
+  .boards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .board-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .board-panel-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .board-panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .board-add-btn {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .board-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .board-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .board-item:last-child {
+    border-bottom: none;
+  }
+
+  .board-item-title {
+    font-size: 13px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .board-item-title:hover {
+    text-decoration: underline;
+  }
+
+  .board-item-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex: none;
+  }
+
+  .board-item-actions {
+    display: flex;
+    gap: 4px;
+    flex: none;
+  }
+
+  .board-mini-btn {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .board-mini-btn:hover {
+    background: #eef0f4;
+  }
+
+  .board-more-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .board-more-btn:hover {
+    color: var(--accent);
+  }
+
+  .board-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 16px 0;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 26, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    padding: 28px 24px 24px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .modal-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-right: 20px;
+  }
+
+  .modal-content {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .form-field {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+
+  textarea.form-field {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .form-submit:hover {
+    filter: brightness(1.08);
+  }
+
+  .form-error {
+    color: #e0555f;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 700px) {
+    .boards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <a class="back-tab" href="index.html">
+    <span class="back-arrow">‹</span>
+    <span>달력</span>
+  </a>
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <div class="page-title">게시판</div>
+      <div class="admin-area">
+        <button class="admin-btn" id="adminLoginBtn">관리자 로그인</button>
+        <button class="admin-btn" id="adminLogoutBtn" style="display:none;">로그아웃</button>
+      </div>
+    </div>
+
+    <div class="boards-grid" id="boardsGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="detailOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="detailClose" aria-label="닫기">✕</button>
+      <div class="modal-title" id="detailTitle"></div>
+      <div class="modal-content" id="detailContent"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="loginOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="loginClose" aria-label="닫기">✕</button>
+      <div class="modal-title">관리자 로그인</div>
+      <input type="email" id="loginEmail" class="form-field" placeholder="이메일" autocomplete="username">
+      <input type="password" id="loginPassword" class="form-field" placeholder="비밀번호" autocomplete="current-password">
+      <button class="form-submit" id="loginSubmit">로그인</button>
+      <div class="form-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="writeOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="writeClose" aria-label="닫기">✕</button>
+      <div class="modal-title" id="writeModalTitle">글쓰기</div>
+      <input type="text" id="writeTitleInput" class="form-field" placeholder="제목">
+      <textarea id="writeContentInput" class="form-field" placeholder="내용"></textarea>
+      <button class="form-submit" id="writeSubmit">등록</button>
+      <div class="form-error" id="writeError"></div>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOERfhDExrHRNGfRALqHXl_CefDbxIEnM",
+    authDomain: "koreaedu-678c3.firebaseapp.com",
+    projectId: "koreaedu-678c3",
+    storageBucket: "koreaedu-678c3.firebasestorage.app",
+    messagingSenderId: "627311486300",
+    appId: "1:627311486300:web:8e91bfa1f406888662cd99"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const boards = [
+    { id: "practice", name: "실습 공지사항" },
+    { id: "icl", name: "ICL & 유학 자료" },
+    { id: "solpass", name: "솔패스 편입 & 편입N 자료" },
+    { id: "iso", name: "ISO 자료" },
+    { id: "buildup", name: "더빌드업 자료" }
+  ];
+
+  let allPosts = [];
+  const visibleCounts = {};
+  boards.forEach(b => { visibleCounts[b.id] = 5; });
+
+  let isAdmin = false;
+  let editingPostId = null;
+  let writeBoardId = null;
+
+  const boardsGridEl = document.getElementById("boardsGrid");
+
+  function formatDate(ts) {
+    if (!ts) return "";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  function renderBoards() {
+    boardsGridEl.innerHTML = "";
+    boards.forEach(b => {
+      const panel = document.createElement("div");
+      panel.className = "board-panel";
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "board-panel-title-row";
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "board-panel-title";
+      titleEl.textContent = b.name;
+      titleRow.appendChild(titleEl);
+
+      if (isAdmin) {
+        const addBtn = document.createElement("button");
+        addBtn.className = "board-add-btn";
+        addBtn.textContent = "+";
+        addBtn.setAttribute("aria-label", `${b.name}에 글쓰기`);
+        addBtn.addEventListener("click", () => openWrite(b.id, null));
+        titleRow.appendChild(addBtn);
+      }
+
+      panel.appendChild(titleRow);
+
+      const listEl = document.createElement("ul");
+      listEl.className = "board-list";
+
+      const posts = allPosts.filter(p => p.board === b.id);
+      const visible = posts.slice(0, visibleCounts[b.id]);
+
+      if (posts.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "board-empty";
+        empty.textContent = "등록된 글이 없습니다.";
+        listEl.appendChild(empty);
+      } else {
+        visible.forEach(p => {
+          const li = document.createElement("li");
+          li.className = "board-item";
+
+          const t = document.createElement("span");
+          t.className = "board-item-title";
+          t.textContent = p.title;
+          t.title = p.title;
+          t.addEventListener("click", () => openDetail(p));
+          li.appendChild(t);
+
+          if (isAdmin) {
+            const actions = document.createElement("span");
+            actions.className = "board-item-actions";
+
+            const editBtn = document.createElement("button");
+            editBtn.className = "board-mini-btn";
+            editBtn.textContent = "수정";
+            editBtn.addEventListener("click", () => openWrite(p.board, p));
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "board-mini-btn";
+            delBtn.textContent = "삭제";
+            delBtn.addEventListener("click", () => handleDelete(p));
+
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            li.appendChild(actions);
+          } else {
+            const d = document.createElement("span");
+            d.className = "board-item-date";
+            d.textContent = formatDate(p.createdAt);
+            li.appendChild(d);
+          }
+
+          listEl.appendChild(li);
+        });
+      }
+
+      panel.appendChild(listEl);
+
+      if (posts.length > visibleCounts[b.id]) {
+        const moreBtn = document.createElement("button");
+        moreBtn.className = "board-more-btn";
+        moreBtn.textContent = "더보기";
+        moreBtn.addEventListener("click", () => {
+          visibleCounts[b.id] += 5;
+          renderBoards();
+        });
+        panel.appendChild(moreBtn);
+      }
+
+      boardsGridEl.appendChild(panel);
+    });
+  }
+
+  async function loadPosts() {
+    try {
+      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      allPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (err) {
+      allPosts = [];
+      console.error("게시글 로드 실패:", err);
+    }
+    renderBoards();
+  }
+
+  const detailOverlay = document.getElementById("detailOverlay");
+  function openDetail(p) {
+    document.getElementById("detailTitle").textContent = p.title;
+    document.getElementById("detailContent").textContent = p.content;
+    detailOverlay.classList.add("open");
+  }
+  document.getElementById("detailClose").addEventListener("click", () => detailOverlay.classList.remove("open"));
+  detailOverlay.addEventListener("click", (e) => { if (e.target === detailOverlay) detailOverlay.classList.remove("open"); });
+
+  const loginOverlay = document.getElementById("loginOverlay");
+  document.getElementById("adminLoginBtn").addEventListener("click", () => {
+    document.getElementById("loginError").textContent = "";
+    loginOverlay.classList.add("open");
+  });
+  document.getElementById("loginClose").addEventListener("click", () => loginOverlay.classList.remove("open"));
+  loginOverlay.addEventListener("click", (e) => { if (e.target === loginOverlay) loginOverlay.classList.remove("open"); });
+
+  document.getElementById("loginSubmit").addEventListener("click", async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const errEl = document.getElementById("loginError");
+    errEl.textContent = "";
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      document.getElementById("loginEmail").value = "";
+      document.getElementById("loginPassword").value = "";
+      loginOverlay.classList.remove("open");
+    } catch (err) {
+      errEl.textContent = "로그인 실패: 이메일 또는 비밀번호를 확인해주세요.";
+    }
+  });
+
+  document.getElementById("adminLogoutBtn").addEventListener("click", () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    isAdmin = !!user;
+    document.getElementById("adminLoginBtn").style.display = isAdmin ? "none" : "inline-block";
+    document.getElementById("adminLogoutBtn").style.display = isAdmin ? "inline-block" : "none";
+    renderBoards();
+  });
+
+  const writeOverlay = document.getElementById("writeOverlay");
+
+  function openWrite(boardId, post) {
+    editingPostId = post ? post.id : null;
+    writeBoardId = boardId;
+    document.getElementById("writeModalTitle").textContent = post ? "글 수정" : "글쓰기";
+    document.getElementById("writeTitleInput").value = post ? post.title : "";
+    document.getElementById("writeContentInput").value = post ? post.content : "";
+    document.getElementById("writeError").textContent = "";
+    writeOverlay.classList.add("open");
+  }
+
+  document.getElementById("writeClose").addEventListener("click", () => writeOverlay.classList.remove("open"));
+  writeOverlay.addEventListener("click", (e) => { if (e.target === writeOverlay) writeOverlay.classList.remove("open"); });
+
+  document.getElementById("writeSubmit").addEventListener("click", async () => {
+    const title = document.getElementById("writeTitleInput").value.trim();
+    const content = document.getElementById("writeContentInput").value.trim();
+    const errEl = document.getElementById("writeError");
+    errEl.textContent = "";
+
+    if (!title || !content) {
+      errEl.textContent = "제목과 내용을 모두 입력해주세요.";
+      return;
+    }
+
+    try {
+      if (editingPostId) {
+        await updateDoc(doc(db, "posts", editingPostId), { title, content });
+      } else {
+        await addDoc(collection(db, "posts"), {
+          board: writeBoardId,
+          title,
+          content,
+          createdAt: serverTimestamp()
+        });
+      }
+      writeOverlay.classList.remove("open");
+      await loadPosts();
+    } catch (err) {
+      errEl.textContent = "저장 실패: " + err.message;
+    }
+  });
+
+  async function handleDelete(p) {
+    if (!confirm("이 글을 삭제하시겠습니까?")) return;
+    try {
+      await deleteDoc(doc(db, "posts", p.id));
+      await loadPosts();
+    } catch (err) {
+      alert("삭제 실패: " + err.message);
+    }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      detailOverlay.classList.remove("open");
+      loginOverlay.classList.remove("open");
+      writeOverlay.classList.remove("open");
+    }
+  });
+
+  loadPosts();
+</script>
+</body>
+</html>
