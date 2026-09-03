@@ -274,6 +274,11 @@
     white-space: pre-wrap;
   }
 
+  .modal-content a {
+    color: var(--accent);
+    word-break: break-all;
+  }
+
   .form-field {
     width: 100%;
     padding: 10px 12px;
@@ -515,10 +520,40 @@
     renderBoards();
   }
 
+  function renderContentWithLinks(container, text) {
+    container.innerHTML = "";
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = urlRegex.exec(text)) !== null) {
+      let url = match[0];
+      let trailing = "";
+      const trailingMatch = url.match(/[.,;:!?)\]}"'”’]+$/);
+      if (trailingMatch) {
+        trailing = trailingMatch[0];
+        url = url.slice(0, url.length - trailing.length);
+      }
+      if (match.index > lastIndex) {
+        container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      const a = document.createElement("a");
+      a.href = url;
+      a.textContent = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      container.appendChild(a);
+      if (trailing) container.appendChild(document.createTextNode(trailing));
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < text.length) {
+      container.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+  }
+
   const detailOverlay = document.getElementById("detailOverlay");
   function openDetail(p) {
     document.getElementById("detailTitle").textContent = p.title;
-    document.getElementById("detailContent").textContent = p.content;
+    renderContentWithLinks(document.getElementById("detailContent"), p.content);
     detailOverlay.classList.add("open");
   }
   document.getElementById("detailClose").addEventListener("click", () => detailOverlay.classList.remove("open"));
